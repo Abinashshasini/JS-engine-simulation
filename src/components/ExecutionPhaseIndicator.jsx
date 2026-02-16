@@ -21,8 +21,14 @@ export function ExecutionPhaseIndicator({ phase, stepCount, totalSteps }) {
               <motion.div
                 style={{
                   ...phaseCircleStyle,
-                  background: isActive ? '#007acc' : isPast ? '#6a9955' : '#3c3c3c',
-                  border: isActive ? '2px solid #007acc' : '2px solid transparent',
+                  background: isActive
+                    ? '#007acc'
+                    : isPast
+                      ? '#6a9955'
+                      : '#3c3c3c',
+                  border: isActive
+                    ? '2px solid #007acc'
+                    : '2px solid transparent',
                 }}
                 animate={{
                   scale: isActive ? 1.1 : 1,

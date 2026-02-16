@@ -3,78 +3,86 @@ import { motion, AnimatePresence } from 'framer-motion';
 export function CallStack({ stack }) {
   return (
     <div style={containerStyle}>
-      <h3>Call Stack</h3>
+      <h4 style={titleStyle}>📚 Call Stack</h4>
 
       <div style={stackStyle}>
         <AnimatePresence>
-          {[...stack].reverse().map((frame) => (
+          {[...(stack || [])].reverse().map((frame, index) => (
             <motion.div
               key={frame.id}
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 20, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              style={frameStyle}
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 20, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              style={{
+                ...frameStyle,
+                background: index === stack.length - 1 ? '#2d4a3e' : '#2d2d30',
+                borderLeft:
+                  index === stack.length - 1
+                    ? '3px solid #4caf50'
+                    : '3px solid #555',
+              }}
             >
-              <div style={{ fontWeight: 'bold' }}>
-                {frame.name} ({frame.type})
-              </div>
-
-              <div style={{ marginTop: 6, fontSize: 12 }}>
-                <div style={{ color: '#9cdcfe' }}>Lexical:</div>
-                {Object.keys(frame.lexicalEnvironment || {}).length === 0 ? (
-                  <div style={{ color: '#777' }}>—</div>
-                ) : (
-                  Object.entries(frame.lexicalEnvironment).map(([k, v]) => (
-                    <div key={k} style={{ color: '#c5c5c5' }}>
-                      {k}: {String(v.value)}
-                    </div>
-                  ))
-                )}
-
-                <div style={{ color: '#9cdcfe', marginTop: 6 }}>Vars:</div>
-                {Object.keys(frame.variableEnvironment || {}).length === 0 ? (
-                  <div style={{ color: '#777' }}>—</div>
-                ) : (
-                  Object.entries(frame.variableEnvironment).map(([k, v]) => (
-                    <div key={k} style={{ color: '#c5c5c5' }}>
-                      {k}: {String(v.value)}
-                    </div>
-                  ))
-                )}
-              </div>
+              <span style={frameNameStyle}>{frame.name}</span>
+              <span style={frameTypeStyle}>{frame.type}</span>
             </motion.div>
           ))}
         </AnimatePresence>
 
-        {(!stack || stack.length === 0) && <div style={emptyStyle}>Empty</div>}
+        {(!stack || stack.length === 0) && (
+          <div style={emptyStyle}>Stack Empty</div>
+        )}
       </div>
     </div>
   );
 }
 
 const containerStyle = {
-  width: 220,
+  flex: 1,
+};
+
+const titleStyle = {
+  margin: '0 0 10px',
+  fontSize: 13,
+  color: '#9cdcfe',
 };
 
 const stackStyle = {
-  border: '2px solid #333',
-  minHeight: 250,
-  padding: 10,
+  border: '1px solid #3c3c3c',
+  borderRadius: 4,
+  minHeight: 120,
+  maxHeight: 200,
+  padding: 8,
   display: 'flex',
   flexDirection: 'column-reverse',
-  overflow: 'hidden',
+  gap: 4,
+  overflow: 'auto',
+  background: '#1a1a1a',
 };
 
 const frameStyle = {
-  padding: 10,
-  margin: 5,
-  background: '#1e1e1e',
-  border: '1px solid #555',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '8px 10px',
+  borderRadius: 4,
+};
+
+const frameNameStyle = {
+  fontWeight: 600,
+  color: '#dcdcaa',
+  fontSize: 12,
+};
+
+const frameTypeStyle = {
+  fontSize: 10,
+  color: '#888',
+  textTransform: 'uppercase',
 };
 
 const emptyStyle = {
-  color: '#777',
+  color: '#555',
   textAlign: 'center',
-  marginTop: 100,
+  padding: 30,
+  fontSize: 12,
 };

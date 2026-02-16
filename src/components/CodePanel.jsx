@@ -17,10 +17,14 @@ export function CodePanel({ code, currentLine, phase }) {
             style={{
               ...lineStyle,
               background: currentLine === index ? '#3a3d41' : 'transparent',
-              borderLeft: currentLine === index ? '3px solid #007acc' : '3px solid transparent',
+              borderLeft:
+                currentLine === index
+                  ? '3px solid #007acc'
+                  : '3px solid transparent',
             }}
             animate={{
-              backgroundColor: currentLine === index ? '#3a3d41' : 'transparent',
+              backgroundColor:
+                currentLine === index ? '#3a3d41' : 'transparent',
             }}
             transition={{ duration: 0.2 }}
           >

@@ -1,10 +1,14 @@
 import { scenarios } from './engine/scenarios';
 import { useEngine } from './hooks/useEngine';
+import { CodePanel } from './components/CodePanel';
+import { MemoryAllocation } from './components/MemoryAllocation';
+import { ExecutionPhaseIndicator } from './components/ExecutionPhaseIndicator';
 import { CallStack } from './components/CallStack';
 import { WebAPIs } from './components/WebAPIs';
 import { MacrotaskQueue } from './components/MacrotaskQueue';
-import { Logs } from './components/Logs';
 import { MicrotaskQueue } from './components/MicrotaskQueue';
+import { Logs } from './components/Logs';
+import './App.css';
 
 function App() {
   const {
@@ -21,49 +25,101 @@ function App() {
   if (!engineState) return null;
 
   return (
-    <div style={{ padding: 20, fontFamily: 'monospace' }}>
-      <h1>JS Event Loop Simulator</h1>
+    <div className="app-container">
+      {/* Header */}
+      <header className="app-header">
+        <h1>🚀 JavaScript Engine Simulator</h1>
+        <p className="subtitle">
+          Visualize execution contexts, memory allocation, and event loop
+        </p>
+      </header>
 
-      {/* Scenario Selector */}
-      <select
-        value={scenario.id}
-        onChange={(e) =>
-          selectScenario(scenarios.find((s) => s.id === e.target.value))
-        }
-      >
-        {scenarios.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.name}
-          </option>
-        ))}
-      </select>
+      {/* Controls */}
+      <div className="controls-bar">
+        <div className="scenario-selector">
+          <label>Scenario:</label>
+          <select
+            value={scenario.id}
+            onChange={(e) =>
+              selectScenario(scenarios.find((s) => s.id === e.target.value))
+            }
+          >
+            {scenarios.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <button onClick={step}>Next Step</button>
+        <div className="control-buttons">
+          <button onClick={step} className="btn btn-primary">
+            ▶ Next Step
+          </button>
 
-      {isPlaying ? (
-        <button onClick={stopAutoPlay}>Pause</button>
-      ) : (
-        <button onClick={startAutoPlay}>Auto Play</button>
-      )}
+          {isPlaying ? (
+            <button onClick={stopAutoPlay} className="btn btn-warning">
+              ⏸ Pause
+            </button>
+          ) : (
+            <button onClick={startAutoPlay} className="btn btn-success">
+              ⏵ Auto Play
+            </button>
+          )}
 
-      <button onClick={reset}>Reset</button>
+          <button onClick={reset} className="btn btn-secondary">
+            ↺ Reset
+          </button>
+        </div>
 
-      <hr />
-
-      {/* Code Panel */}
-      <pre>{scenario.code}</pre>
-
-      <hr />
-
-      {/* Visualization Panels */}
-      <div style={{ display: 'flex', gap: 40 }}>
-        <CallStack stack={engineState.callStack} />
-        <WebAPIs apis={engineState.webAPIs} />
-        <MicrotaskQueue queue={engineState.microtaskQueue} />
-        <MacrotaskQueue queue={engineState.macrotaskQueue} />
+        <div className="scenario-description">{scenario.description}</div>
       </div>
 
-      <Logs logs={engineState.logs} />
+      {/* Phase Indicator */}
+      <ExecutionPhaseIndicator
+        phase={engineState.phase}
+        stepCount={engineState.stepCount}
+        totalSteps={engineState.totalSteps}
+      />
+
+      {/* Main Content - Split Layout */}
+      <div className="main-content">
+        {/* Left Panel - Code */}
+        <div className="left-panel">
+          <CodePanel
+            code={scenario.code}
+            currentLine={engineState.currentLine}
+            phase={engineState.phase}
+          />
+        </div>
+
+        {/* Center Panel - Memory & Call Stack */}
+        <div className="center-panel">
+          <MemoryAllocation
+            contexts={engineState.callStack}
+            phase={engineState.phase}
+          />
+        </div>
+
+        {/* Right Panel - Event Loop */}
+        <div className="right-panel">
+          <div className="event-loop-section">
+            <h3 className="section-title">🔄 Event Loop</h3>
+
+            <div className="queues-container">
+              <CallStack stack={engineState.callStack} />
+              <WebAPIs apis={engineState.webAPIs} />
+              <MicrotaskQueue queue={engineState.microtaskQueue} />
+              <MacrotaskQueue queue={engineState.macrotaskQueue} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom - Logs */}
+      <div className="logs-section">
+        <Logs logs={engineState.logs} />
+      </div>
     </div>
   );
 }

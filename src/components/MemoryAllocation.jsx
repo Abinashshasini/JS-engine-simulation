@@ -38,25 +38,29 @@ export function MemoryAllocation({ contexts, phase }) {
                 <span style={{ color: '#4ec9b0' }}>Variable Environment</span>
                 <span style={subtitleStyle}>(var, function declarations)</span>
               </div>
-              
+
               {Object.keys(ctx.variableEnvironment || {}).length === 0 ? (
                 <div style={emptyEnvStyle}>Empty</div>
               ) : (
                 <div style={variablesGridStyle}>
-                  {Object.entries(ctx.variableEnvironment).map(([name, record]) => (
-                    <motion.div
-                      key={name}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      style={variableRowStyle}
-                    >
-                      <span style={varNameStyle}>{name}</span>
-                      <span style={kindTagStyle(record.kind)}>{record.kind}</span>
-                      <span style={valueStyle(record)}>
-                        {formatValue(record)}
-                      </span>
-                    </motion.div>
-                  ))}
+                  {Object.entries(ctx.variableEnvironment).map(
+                    ([name, record]) => (
+                      <motion.div
+                        key={name}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        style={variableRowStyle}
+                      >
+                        <span style={varNameStyle}>{name}</span>
+                        <span style={kindTagStyle(record.kind)}>
+                          {record.kind}
+                        </span>
+                        <span style={valueStyle(record)}>
+                          {formatValue(record)}
+                        </span>
+                      </motion.div>
+                    ),
+                  )}
                 </div>
               )}
             </div>
@@ -72,27 +76,33 @@ export function MemoryAllocation({ contexts, phase }) {
                 <div style={emptyEnvStyle}>Empty</div>
               ) : (
                 <div style={variablesGridStyle}>
-                  {Object.entries(ctx.lexicalEnvironment).map(([name, record]) => (
-                    <motion.div
-                      key={name}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      style={{
-                        ...variableRowStyle,
-                        background: !record.initialized ? '#4a2020' : '#2d2d30',
-                      }}
-                    >
-                      <span style={varNameStyle}>{name}</span>
-                      <span style={kindTagStyle(record.kind)}>{record.kind}</span>
-                      <span style={valueStyle(record)}>
-                        {!record.initialized ? (
-                          <span style={tdzStyle}>⚠️ TDZ</span>
-                        ) : (
-                          formatValue(record)
-                        )}
-                      </span>
-                    </motion.div>
-                  ))}
+                  {Object.entries(ctx.lexicalEnvironment).map(
+                    ([name, record]) => (
+                      <motion.div
+                        key={name}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        style={{
+                          ...variableRowStyle,
+                          background: !record.initialized
+                            ? '#4a2020'
+                            : '#2d2d30',
+                        }}
+                      >
+                        <span style={varNameStyle}>{name}</span>
+                        <span style={kindTagStyle(record.kind)}>
+                          {record.kind}
+                        </span>
+                        <span style={valueStyle(record)}>
+                          {!record.initialized ? (
+                            <span style={tdzStyle}>⚠️ TDZ</span>
+                          ) : (
+                            formatValue(record)
+                          )}
+                        </span>
+                      </motion.div>
+                    ),
+                  )}
                 </div>
               )}
             </div>
@@ -226,7 +236,14 @@ const kindTagStyle = (kind) => ({
   fontSize: 10,
   padding: '2px 6px',
   borderRadius: 3,
-  background: kind === 'var' ? '#3a5a40' : kind === 'let' ? '#5a3a40' : kind === 'const' ? '#3a405a' : '#4a4a20',
+  background:
+    kind === 'var'
+      ? '#3a5a40'
+      : kind === 'let'
+        ? '#5a3a40'
+        : kind === 'const'
+          ? '#3a405a'
+          : '#4a4a20',
   color: '#fff',
 });
 
