@@ -10,11 +10,16 @@ export function createEngine(scenario) {
     logs: [],
     microtaskQueue: [],
     macrotaskQueue: [],
+    rafQueue: [], // requestAnimationFrame
+    mutationObserverQueue: [], // MutationObserver (microtask priority)
+    uiEventQueue: [], // UI events (clicks, input, etc.)
+    networkQueue: [], // Fetch/XHR responses
     webAPIs: {},
     phase: 'idle',
     currentLine: -1,
     stepCount: 0,
     currentExplanation: null,
+    isRendering: false, // Indicates rendering phase is active
   });
 
   let state = initialState();

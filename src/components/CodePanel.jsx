@@ -1,3 +1,6 @@
+import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+
 // Simple syntax highlighter for JavaScript
 function highlightCode(line) {
   const tokens = [];
@@ -77,40 +80,90 @@ function highlightCode(line) {
 
 export function CodePanel({ code, currentLine }) {
   const lines = code.trim().split('\n');
+  const scrollRef = useRef(null);
+  const lineRefs = useRef([]);
+
+  // Auto-scroll to current line
+  useEffect(() => {
+    if (
+      currentLine >= 0 &&
+      lineRefs.current[currentLine] &&
+      scrollRef.current
+    ) {
+      const lineEl = lineRefs.current[currentLine];
+      const container = scrollRef.current;
+      const lineTop = lineEl.offsetTop;
+      const lineHeight = lineEl.offsetHeight;
+      const containerHeight = container.clientHeight;
+      const scrollTop = container.scrollTop;
+
+      if (
+        lineTop < scrollTop ||
+        lineTop + lineHeight > scrollTop + containerHeight
+      ) {
+        container.scrollTo({
+          top: lineTop - containerHeight / 3,
+          behavior: 'smooth',
+        });
+      }
+    }
+  }, [currentLine]);
 
   return (
     <div className="flex flex-col bg-vscode-bg border-b md:border-b-0 md:border-r border-vscode-border min-h-32 max-h-52 md:min-h-0 md:max-h-none md:h-auto md:w-64 lg:w-72 shrink-0 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center h-8 px-3 bg-vscode-panel border-b border-vscode-border text-[11px] uppercase tracking-wide text-vscode-text-secondary shrink-0">
-        <span className="mr-1.5">📄</span>
-        Code
+      <div className="flex items-center justify-between h-8 px-3 bg-vscode-panel border-b border-vscode-border text-[11px] uppercase tracking-wide text-vscode-text-secondary shrink-0">
+        <div className="flex items-center">
+          <span className="mr-1.5">📄</span>
+          Code
+        </div>
+        {currentLine >= 0 && (
+          <span className="text-[9px] text-accent-blue font-mono">
+            Ln {currentLine + 1}
+          </span>
+        )}
       </div>
 
       {/* Code Content */}
-      <div className="flex-1 overflow-auto py-1 font-mono text-xs leading-5">
-        {lines.map((line, index) => (
-          <div
-            key={index}
-            className={`flex px-2 min-h-5 transition-colors duration-150 ${
-              currentLine === index
-                ? 'bg-accent-blue/30'
-                : 'hover:bg-vscode-hover'
-            }`}
-          >
-            <span
-              className={`w-6 text-right pr-2 select-none shrink-0 text-[11px] ${
-                currentLine === index
-                  ? 'text-accent-blue'
-                  : 'text-vscode-text-muted'
+      <div
+        className="flex-1 overflow-auto py-1 font-mono text-xs leading-5"
+        ref={scrollRef}
+      >
+        {lines.map((line, index) => {
+          const isActive = currentLine === index;
+          return (
+            <div
+              key={index}
+              ref={(el) => (lineRefs.current[index] = el)}
+              className={`flex px-2 min-h-5 transition-all duration-200 relative ${
+                isActive
+                  ? 'bg-accent-blue/20 animate-glow-pulse'
+                  : 'hover:bg-vscode-hover'
               }`}
             >
-              {index + 1}
-            </span>
-            <span className="whitespace-pre text-[12px]">
-              {highlightCode(line)}
-            </span>
-          </div>
-        ))}
+              {/* Active line left indicator */}
+              {isActive && (
+                <motion.div
+                  layoutId="codeLine"
+                  className="absolute left-0 top-0 bottom-0 w-[3px] bg-accent-blue rounded-r"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
+              <span
+                className={`w-6 text-right pr-2 select-none shrink-0 text-[11px] transition-colors duration-200 ${
+                  isActive
+                    ? 'text-accent-blue font-medium'
+                    : 'text-vscode-text-muted'
+                }`}
+              >
+                {index + 1}
+              </span>
+              <span className="whitespace-pre text-[12px]">
+                {highlightCode(line)}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

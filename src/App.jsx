@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { scenarios } from './engine/scenarios';
 import { useEngine } from './hooks/useEngine';
 import { CodePanel } from './components/CodePanel';
@@ -7,8 +8,13 @@ import { EventLoopPanel } from './components/EventLoopPanel';
 import { ConsolePanel } from './components/ConsolePanel';
 import { LogsPanel } from './components/LogsPanel';
 import { StepExplanation } from './components/StepExplanation';
+import { LandingPage } from './components/LandingPage';
 
 function App() {
+  const [showLanding, setShowLanding] = useState(() => {
+    return localStorage.getItem('jsengine-visited') !== 'true';
+  });
+
   const {
     engineState,
     step,
@@ -24,6 +30,11 @@ function App() {
   const [theme, setTheme] = useState(
     () => localStorage.getItem('jsengine-theme') || 'dark',
   );
+
+  const handleStart = () => {
+    localStorage.setItem('jsengine-visited', 'true');
+    setShowLanding(false);
+  };
 
   // Apply theme
   useEffect(() => {
@@ -81,9 +92,15 @@ function App() {
   );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    if (!showLanding) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [handleKeyDown, showLanding]);
+
+  if (showLanding) {
+    return <LandingPage onStart={handleStart} />;
+  }
 
   if (!engineState) return null;
 
@@ -105,89 +122,136 @@ function App() {
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
+  const progressPct =
+    engineState.totalSteps > 0
+      ? Math.round((engineState.stepCount / engineState.totalSteps) * 100)
+      : 0;
+
+  const isExecutionComplete =
+    engineState.phase === 'done' ||
+    engineState.stepCount >= engineState.totalSteps;
+
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-vscode-darker">
       {/* Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-vscode-panel border-b border-vscode-border shrink-0">
-        {/* Left - Title & Scenario */}
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-vscode-text font-normal hidden md:inline">
-            JS Engine
-          </span>
-          <select
-            value={scenario.id}
-            onChange={(e) =>
-              selectScenario(scenarios.find((s) => s.id === e.target.value))
-            }
-            className="px-2 py-1.5 pr-8 text-xs bg-vscode-input border border-vscode-border rounded text-vscode-text cursor-pointer w-40 md:w-52 focus:outline-none focus:border-accent-blue appearance-none"
-          >
-            {scenarios.map((s) => (
-              <option key={s.id} value={s.id}>
-                {completedScenarios.includes(s.id) ? '✓ ' : ''}
-                {s.name}
-              </option>
-            ))}
-          </select>
-          <span
-            className="text-[10px] text-vscode-comment hidden lg:inline"
-            title="Progress"
-          >
-            {completedScenarios.length}/{scenarios.length} done
-          </span>
+      <div className="shrink-0">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-vscode-panel border-b border-vscode-border">
+          {/* Left - Title & Scenario */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-vscode-text font-normal hidden md:inline">
+              <span className="text-accent-yellow">⚡</span> JS Engine
+            </span>
+            <select
+              value={scenario.id}
+              onChange={(e) =>
+                selectScenario(scenarios.find((s) => s.id === e.target.value))
+              }
+              className="px-2 py-1.5 pr-8 text-xs bg-vscode-input border border-vscode-border rounded text-vscode-text cursor-pointer w-40 md:w-52 focus:outline-none focus:border-accent-blue appearance-none"
+            >
+              {scenarios.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {completedScenarios.includes(s.id) ? '✓ ' : ''}
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <span
+              className="text-[10px] text-vscode-comment hidden lg:inline"
+              title="Progress"
+            >
+              {completedScenarios.length}/{scenarios.length} done
+            </span>
+          </div>
+
+          {/* Center - Controls */}
+          <div className="flex items-center gap-1.5">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={step}
+              className="flex items-center justify-center w-9 h-8 bg-accent-blue text-white rounded text-sm hover:bg-blue-500 transition-colors shadow-md shadow-accent-blue/30"
+              title="Next Step (Space / →)"
+            >
+              ▶
+            </motion.button>
+            {!isExecutionComplete && (
+              <>
+                {isPlaying ? (
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={stopAutoPlay}
+                    className="flex items-center justify-center w-9 h-8 bg-transparent text-vscode-text rounded text-sm hover:bg-vscode-hover transition-colors"
+                    title="Pause (P)"
+                  >
+                    ⏸
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={startAutoPlay}
+                    className="flex items-center justify-center w-9 h-8 bg-transparent text-vscode-text rounded text-sm hover:bg-vscode-hover transition-colors"
+                    title="Auto Play (P)"
+                  >
+                    ⏵⏵
+                  </motion.button>
+                )}
+              </>
+            )}
+            <motion.button
+              whileHover={{ scale: 1.1, rotate: -180 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              onClick={reset}
+              className="flex items-center justify-center w-9 h-8 bg-transparent text-vscode-text rounded text-sm hover:bg-vscode-hover transition-colors"
+              title="Reset (R)"
+            >
+              ↺
+            </motion.button>
+          </div>
+
+          {/* Right - Phase, Step & Theme */}
+          <div className="flex items-center gap-2">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={engineState.phase}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className={`px-2 py-1 text-[10px] rounded uppercase tracking-wide ${
+                  engineState.phase !== 'idle' && engineState.phase !== 'done'
+                    ? 'animate-phase-pulse'
+                    : ''
+                } ${phaseStyles[engineState.phase] || phaseStyles.idle}`}
+              >
+                {phaseLabels[engineState.phase] || 'Ready'}
+              </motion.span>
+            </AnimatePresence>
+            <span className="text-[11px] text-vscode-text-secondary hidden sm:inline tabular-nums min-w-[44px] text-right">
+              {engineState.stepCount}/{engineState.totalSteps}
+            </span>
+            <motion.button
+              whileHover={{ scale: 1.15, rotate: 15 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={toggleTheme}
+              className="ml-1 w-7 h-7 flex items-center justify-center rounded hover:bg-vscode-hover text-sm"
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </motion.button>
+          </div>
         </div>
 
-        {/* Center - Controls */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={step}
-            className="flex items-center justify-center w-9 h-8 bg-accent-blue text-white rounded text-sm hover:bg-blue-500 transition-colors"
-            title="Next Step (Space / →)"
-          >
-            ▶
-          </button>
-          {isPlaying ? (
-            <button
-              onClick={stopAutoPlay}
-              className="flex items-center justify-center w-9 h-8 bg-transparent text-vscode-text rounded text-sm hover:bg-vscode-hover transition-colors"
-              title="Pause (P)"
-            >
-              ⏸
-            </button>
-          ) : (
-            <button
-              onClick={startAutoPlay}
-              className="flex items-center justify-center w-9 h-8 bg-transparent text-vscode-text rounded text-sm hover:bg-vscode-hover transition-colors"
-              title="Auto Play (P)"
-            >
-              ⏵⏵
-            </button>
-          )}
-          <button
-            onClick={reset}
-            className="flex items-center justify-center w-9 h-8 bg-transparent text-vscode-text rounded text-sm hover:bg-vscode-hover transition-colors"
-            title="Reset (R)"
-          >
-            ↺
-          </button>
-        </div>
-
-        {/* Right - Phase, Step & Theme */}
-        <div className="flex items-center gap-2">
-          <span
-            className={`px-2 py-1 text-[10px] rounded uppercase tracking-wide ${phaseStyles[engineState.phase] || phaseStyles.idle}`}
-          >
-            {phaseLabels[engineState.phase] || 'Ready'}
-          </span>
-          <span className="text-[11px] text-vscode-text-secondary hidden sm:inline">
-            {engineState.stepCount}/{engineState.totalSteps}
-          </span>
-          <button
-            onClick={toggleTheme}
-            className="ml-1 w-7 h-7 flex items-center justify-center rounded hover:bg-vscode-hover text-sm"
-            title="Toggle Theme"
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
+        {/* Progress Bar */}
+        <div className="h-0.5 bg-vscode-border relative overflow-hidden">
+          <motion.div
+            className="absolute left-0 top-0 h-full bg-accent-blue"
+            initial={false}
+            animate={{ width: `${progressPct}%` }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          />
+          {isPlaying && <div className="absolute inset-0 animate-shimmer" />}
         </div>
       </div>
 

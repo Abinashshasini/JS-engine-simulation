@@ -111,3 +111,158 @@ body {
 .animate-slide-in {
   animation: slideIn 0.2s ease-out;
 }
+
+/* Glow pulse for active line */
+@keyframes glowPulse {
+
+  0%,
+  100% {
+    box-shadow: inset 3px 0 8px -2px rgba(0, 122, 204, 0.4);
+  }
+
+  50% {
+    box-shadow: inset 3px 0 12px -1px rgba(0, 122, 204, 0.7);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Phase badge pulse */
+@keyframes phasePulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-phase-pulse {
+  animation: phasePulse 1.5s ease-in-out infinite;
+}
+
+/* Subtle float for empty states */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Progress bar shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Fade entry */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.25s ease-out;
+}
+
+/* Queue item pop-in */
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateX(-8px);
+  }
+
+  80% {
+    transform: scale(1.02) translateX(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+}
+
+.animate-pop-in {
+  animation: popIn 0.3s ease-out;
+}
+
+/* Console line type */
+@keyframes typeLine {
+  from {
+    max-width: 0;
+  }
+
+  to {
+    max-width: 100%;
+  }
+}
+
+.animate-type-line {
+  animation: typeLine 0.3s ease-out;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Border glow for active panels */
+@keyframes borderGlow {
+
+  0%,
+  100% {
+    border-color: rgba(0, 122, 204, 0.3);
+  }
+
+  50% {
+    border-color: rgba(0, 122, 204, 0.6);
+  }
+}
+
+.animate-border-glow {
+  animation: borderGlow 2s ease-in-out infinite;
+}
+
+/* Spin slow for event loop icon */
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 4s linear infinite;
+}
