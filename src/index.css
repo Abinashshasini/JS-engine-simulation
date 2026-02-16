@@ -1,10 +1,113 @@
-:root {}
+@import "tailwindcss";
 
+/* VS Code Dark Theme Custom Colors */
+@theme {
+  --color-vscode-bg: #1e1e1e;
+  --color-vscode-darker: #181818;
+  --color-vscode-sidebar: #252526;
+  --color-vscode-panel: #252526;
+  --color-vscode-input: #3c3c3c;
+  --color-vscode-hover: #2a2d2e;
+  --color-vscode-active: #37373d;
+  --color-vscode-border: #3c3c3c;
+  --color-vscode-text: #cccccc;
+  --color-vscode-text-secondary: #858585;
+  --color-vscode-text-muted: #6a6a6a;
+  --color-vscode-comment: #6a9955;
+  --color-vscode-fg: #d4d4d4;
+  --color-vscode-cyan: #9cdcfe;
+  --color-vscode-purple: #c586c0;
+  --color-vscode-blue: #569cd6;
+  --color-vscode-green: #b5cea8;
+  --color-vscode-orange: #ce9178;
+  --color-vscode-yellow: #dcdcaa;
+  --color-accent-blue: #007acc;
+  --color-accent-green: #4ec9b0;
+  --color-accent-yellow: #dcdcaa;
+  --color-accent-orange: #ce9178;
+  --color-accent-purple: #c586c0;
+  --color-accent-red: #f14c4c;
+  --color-accent-cyan: #9cdcfe;
+}
+
+/* Light Theme Override */
+[data-theme="light"] {
+  --color-vscode-bg: #ffffff;
+  --color-vscode-darker: #f3f3f3;
+  --color-vscode-sidebar: #f3f3f3;
+  --color-vscode-panel: #f3f3f3;
+  --color-vscode-input: #ffffff;
+  --color-vscode-hover: #e8e8e8;
+  --color-vscode-active: #d6ebff;
+  --color-vscode-border: #e5e5e5;
+  --color-vscode-text: #333333;
+  --color-vscode-text-secondary: #666666;
+  --color-vscode-text-muted: #999999;
+  --color-vscode-comment: #008000;
+  --color-vscode-fg: #333333;
+  --color-vscode-cyan: #001080;
+  --color-vscode-purple: #af00db;
+  --color-vscode-blue: #0000ff;
+  --color-vscode-green: #098658;
+  --color-vscode-orange: #a31515;
+  --color-vscode-yellow: #795e26;
+}
+
+/* Base Styles */
+html,
+body,
+#root {
+  @apply h-full w-full overflow-hidden;
+}
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  @apply bg-vscode-darker text-vscode-text font-sans text-[13px] leading-normal;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Code Font */
+.font-mono {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  @apply w-2.5 h-2.5;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-black/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-black/30;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  @apply bg-white/20;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/30;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.2s ease-out;
 }

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { createEngine } from '../engine/createEngine';
 
 export function useEngine(initialScenario) {
@@ -8,6 +8,14 @@ export function useEngine(initialScenario) {
   const [scenario, setScenario] = useState(initialScenario);
   const [engineState, setEngineState] = useState(engineRef.current.getState());
   const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1); // 0.5, 1, 2, 3
+  const [completedScenarios, setCompletedScenarios] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('jsengine-completed') || '[]');
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
     engineRef.current = createEngine(scenario);
@@ -15,20 +23,33 @@ export function useEngine(initialScenario) {
     stopAutoPlay();
   }, [scenario]);
 
-  function step() {
+  // Save completed scenarios to localStorage
+  useEffect(() => {
+    localStorage.setItem(
+      'jsengine-completed',
+      JSON.stringify(completedScenarios),
+    );
+  }, [completedScenarios]);
+
+  const step = useCallback(() => {
     if (!engineRef.current.hasNextStep()) {
       stopAutoPlay();
+      // Mark scenario as completed
+      if (!completedScenarios.includes(scenario.id)) {
+        setCompletedScenarios((prev) => [...prev, scenario.id]);
+      }
       return;
     }
 
     const updated = engineRef.current.step();
     setEngineState(updated);
-  }
+  }, [scenario.id, completedScenarios]);
 
-  function startAutoPlay() {
+  const startAutoPlay = useCallback(() => {
     if (intervalRef.current) return;
 
     setIsPlaying(true);
+    const interval = Math.round(800 / speed);
 
     intervalRef.current = setInterval(() => {
       if (!engineRef.current.hasNextStep()) {
@@ -37,24 +58,36 @@ export function useEngine(initialScenario) {
       }
       const updated = engineRef.current.step();
       setEngineState(updated);
-    }, 800);
-  }
+    }, interval);
+  }, [speed]);
 
-  function stopAutoPlay() {
+  const stopAutoPlay = useCallback(() => {
     clearInterval(intervalRef.current);
     intervalRef.current = null;
     setIsPlaying(false);
-  }
+  }, []);
 
-  function reset() {
+  // Update interval when speed changes during playback
+  useEffect(() => {
+    if (isPlaying) {
+      stopAutoPlay();
+      startAutoPlay();
+    }
+  }, [speed]);
+
+  const reset = useCallback(() => {
     stopAutoPlay();
     engineRef.current.reset();
     setEngineState(engineRef.current.getState());
-  }
+  }, [stopAutoPlay]);
 
-  function selectScenario(newScenario) {
+  const selectScenario = useCallback((newScenario) => {
     setScenario(newScenario);
-  }
+  }, []);
+
+  const changeSpeed = useCallback((newSpeed) => {
+    setSpeed(newSpeed);
+  }, []);
 
   return {
     engineState,
@@ -65,5 +98,8 @@ export function useEngine(initialScenario) {
     startAutoPlay,
     stopAutoPlay,
     isPlaying,
+    speed,
+    changeSpeed,
+    completedScenarios,
   };
 }

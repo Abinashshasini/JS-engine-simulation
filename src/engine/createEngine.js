@@ -1,3 +1,5 @@
+import { explanations } from './explanations';
+
 export function createEngine(scenario) {
   let instructionPointer = 0;
   const instructions = [...scenario.instructions];
@@ -12,9 +14,12 @@ export function createEngine(scenario) {
     phase: 'idle',
     currentLine: -1,
     stepCount: 0,
+    currentExplanation: null,
   });
 
   let state = initialState();
+
+  // Step explanations are loaded from src/engine/explanations.js
 
   // -----------------------------------
   // Execution Context Factory
@@ -100,11 +105,23 @@ export function createEngine(scenario) {
   function step() {
     if (instructionPointer >= instructions.length) {
       state.phase = 'done';
+      state.currentExplanation = {
+        title: 'Execution Complete',
+        description: 'All synchronous and asynchronous code has been executed.',
+        concept: null,
+      };
       return getState();
     }
 
     const instr = instructions[instructionPointer];
     state.stepCount++;
+
+    // Set explanation for current instruction
+    state.currentExplanation = explanations[instr.type] || {
+      title: instr.type,
+      description: 'Executing instruction...',
+      concept: null,
+    };
 
     // Update current line if instruction has it
     if (instr.line !== undefined) {
@@ -357,6 +374,7 @@ export function createEngine(scenario) {
       currentLine: state.currentLine,
       stepCount: state.stepCount,
       totalSteps: instructions.length,
+      currentExplanation: state.currentExplanation,
     };
   }
 
