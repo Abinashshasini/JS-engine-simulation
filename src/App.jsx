@@ -241,13 +241,12 @@ function App() {
               </>
             )}
             <motion.button
-              whileHover={{ scale: 1.1 }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.9 }}
               onClick={step}
               className="flex items-center justify-center w-9 h-8 bg-accent-blue text-white rounded text-sm hover:bg-blue-500 transition-colors shadow-md shadow-accent-blue/30"
               title="Next Step (Space / →)"
               style={{ pointerEvents: isExecutionComplete ? 'none' : 'auto' }}
-              disabled={isExecutionComplete}
             >
               ▶
             </motion.button>
