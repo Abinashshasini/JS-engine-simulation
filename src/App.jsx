@@ -215,15 +215,6 @@ function App() {
 
           {/* Center - Controls */}
           <div className="flex items-center justify-center gap-1.5">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={step}
-              className="flex items-center justify-center w-9 h-8 bg-accent-blue text-white rounded text-sm hover:bg-blue-500 transition-colors shadow-md shadow-accent-blue/30"
-              title="Next Step (Space / →)"
-            >
-              ▶
-            </motion.button>
             {!isExecutionComplete && (
               <>
                 {isPlaying ? (
@@ -249,6 +240,17 @@ function App() {
                 )}
               </>
             )}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={step}
+              className="flex items-center justify-center w-9 h-8 bg-accent-blue text-white rounded text-sm hover:bg-blue-500 transition-colors shadow-md shadow-accent-blue/30"
+              title="Next Step (Space / →)"
+              style={{ pointerEvents: isExecutionComplete ? 'none' : 'auto' }}
+              disabled={isExecutionComplete}
+            >
+              ▶
+            </motion.button>
             <motion.button
               whileHover={{ scale: 1.1, rotate: -180 }}
               whileTap={{ scale: 0.9 }}
