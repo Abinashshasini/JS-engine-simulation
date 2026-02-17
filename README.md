@@ -1,22 +1,21 @@
 <div align="center">
 
-<img src="public/banner.svg" alt="Network Journey" width="100%" />
+<h1>🧠 JS Engine + Event Loop</h1>
 
 <br />
-<br />
 
-**A cinematic 3D voyage through the invisible infrastructure that powers every click, every search, every connection.**
+**Finally understand what really happens when JavaScript executes — visualized step-by-step in real-time.**
 
 <br />
 
 ![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)
-![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=black)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
 <br />
 
-[Launch Demo](#getting-started) · [Features](#-the-experience) · [Tech](#-built-with)
+[Launch Demo](#-getting-started) · [Features](#-features) · [Scenarios](#-learning-scenarios) · [Tech](#-built-with)
 
 </div>
 
@@ -24,66 +23,73 @@
 
 <br />
 
-## 🌌 What Is This?
+## 🤔 What Is This?
 
-You type a URL. You press Enter. A webpage appears.
+Ever wondered what _actually_ happens when you write `setTimeout(() => console.log('Hi'), 0)`?
 
-**But what happens in between?**
+**Why does it log after synchronous code?**
 
-Network Journey transforms the invisible milliseconds of internet communication into a breathtaking 3D experience. Watch data packets race through fiber optic cables, witness the TCP handshake unfold in real-time, and fly through the digital infrastructure that connects billions of devices.
+This interactive visualizer shows you the JavaScript engine's inner workings frame-by-frame:
 
-> _"Finally, networking concepts that don't put you to sleep."_
+- **Call Stack** execution in real-time
+- **Memory allocation** (var, let, const, functions)
+- **Event Loop** coordination between queues
+- **Microtask** vs **Macrotask** priority
+- **Web APIs** handling async operations
+- **Console output** synced with execution
+
+> _"I finally get how the event loop works!"_ — Every developer after 5 minutes
 
 <br />
 
-## 🚀 The Experience
+## 🎯 The Experience
 
 <table>
 <tr>
 <td width="50%">
 
-### 🎬 Hyperspace Launch
+### 📚 16 Curated Scenarios
 
-Begin with a cinematic warp animation — 400 procedurally generated stars streaking past as you accelerate into the network.
-
-</td>
-<td width="50%">
-
-### 🌐 DNS Resolution
-
-Watch your domain name transform into an IP address as queries bounce between recursive resolvers.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 🤝 TCP Handshake
-
-Experience the legendary 3-way handshake: SYN → SYN-ACK → ACK, visualized as glowing data packets.
+From variable hoisting to promise chaining — each scenario teaches a core JavaScript concept with working code.
 
 </td>
 <td width="50%">
 
-### 🔐 SSL/TLS Encryption
+### 🎬 Step-by-Step Execution
 
-See certificates exchange, keys generate, and secure tunnels establish before your eyes.
+Watch code execute line-by-line. See variables initialize, functions push to the call stack, and callbacks queue up.
 
 </td>
 </tr>
 <tr>
 <td width="50%">
 
-### 📦 Data Transfer
+### 🔄 Event Loop Phases
 
-Follow HTTP requests through load balancers, NAT gateways, and server farms rendered in stunning 3D.
+Visual indicators show when the engine switches between creation phase, execution phase, and event loop processing.
 
 </td>
 <td width="50%">
 
-### 🎨 Browser Rendering
+### ⚡ Microtask Priority
 
-Watch the DOM tree construct, styles cascade, and pixels paint to complete the journey.
+See why promises execute _before_ setTimeout — microtasks always drain before the next macrotask runs.
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🧩 Call Stack Tracking
+
+Function calls push contexts, returns pop them. Watch the stack grow and shrink with each operation.
+
+</td>
+<td width="50%">
+
+### 📝 Live Console Output
+
+Console logs appear exactly when they execute — no guessing about order or timing.
 
 </td>
 </tr>
@@ -94,19 +100,46 @@ Watch the DOM tree construct, styles cascade, and pixels paint to complete the j
 ## ✨ Features
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│   ◉ Scroll-driven 3D camera flight through network topology│
-│   ◉ Real-time ARP, NAT, and Load Balancer visualizations   │
-│   ◉ Animated data packets with physics-based motion        │
-│   ◉ Educational HUD with phase-by-phase explanations       │
-│   ◉ Hyperspace warp transition with star field             │
-│   ◉ Dark theme with neon blue accents                      │
-│   ◉ Smooth 60fps animations powered by GSAP                │
-│   ◉ Responsive design for all screen sizes                 │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│   ◉ Real-time call stack visualization                      │
+│   ◉ Memory panel showing vars, lets, consts, and functions  │
+│   ◉ Microtask & Macrotask queue animations                  │
+│   ◉ Web API tracking (setTimeout, Promises, fetch)          │
+│   ◉ Line-by-line code highlighting during execution         │
+│   ◉ Console output synced with actual execution order       │
+│   ◉ Creation vs Execution phase indicators                  │
+│   ◉ Speed control (pause, slow, normal, fast)               │
+│   ◉ Step-by-step explanations for each operation            │
+│   ◉ Execution logs panel with full event history            │
+│   ◉ Dark theme with smooth animations                       │
+│   ◉ Responsive design for all screen sizes                  │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
 ```
+
+<br />
+
+## 📖 Learning Scenarios
+
+| #   | Scenario                   | Concepts Covered                            |
+| :-- | :------------------------- | :------------------------------------------ |
+| 1   | var/let/const & Hoisting   | Memory allocation, TDZ, variable hoisting   |
+| 2   | Function Execution Context | Call stack, nested functions, scope         |
+| 3   | Closures                   | Lexical scope, closure memory               |
+| 4   | Callback Functions         | Functions as values, callback execution     |
+| 5   | setTimeout (Macrotask)     | Web API, macrotask queue, event loop        |
+| 6   | Promise (Microtask)        | Promise resolution, microtask queue         |
+| 7   | Microtask vs Macrotask     | Priority order, queue processing            |
+| 8   | Promise Chaining           | .then() chains, microtask sequencing        |
+| 9   | Async/Await                | Syntactic sugar over promises               |
+| 10  | Event Loop Challenge       | Complex async flow with mixed queues        |
+| 11  | Multiple setTimeout        | Macrotask ordering, timer delays            |
+| 12  | Mixed Promises & Timeouts  | Interleaved micro/macrotask execution       |
+| 13  | Error Handling (try/catch) | Exception handling in execution flow        |
+| 14  | Fetch API Simulation       | Network requests as async operations        |
+| 15  | Recursive Functions        | Stack growth, base cases                    |
+| 16  | Hoisting Edge Cases        | Function vs var hoisting, declaration order |
 
 <br />
 
@@ -114,15 +147,13 @@ Watch the DOM tree construct, styles cascade, and pixels paint to complete the j
 
 <div align="center">
 
-|     | Technology               | Role                          |
-| :-: | :----------------------- | :---------------------------- |
-| ⚛️  | **React 19**             | Component Architecture        |
-| 🎮  | **React Three Fiber**    | Declarative 3D Rendering      |
-| 🌐  | **Three.js**             | WebGL Engine                  |
-| 🎬  | **GSAP + ScrollTrigger** | Scroll-Synchronized Animation |
-| 🌊  | **Lenis**                | Butter-Smooth Scrolling       |
-| ⚡  | **Vite**                 | Lightning-Fast Dev Server     |
-| 🎨  | **Drei**                 | 3D Component Library          |
+|     | Technology        | Role                      |
+| :-: | :---------------- | :------------------------ |
+| ⚛️  | **React 19**      | Component Architecture    |
+| 🎨  | **Tailwind CSS**  | Utility-First Styling     |
+| 🎬  | **Framer Motion** | Smooth UI Animations      |
+| ⚡  | **Vite**          | Lightning-Fast Dev Server |
+| 🧠  | **Custom Engine** | JS Execution Simulation   |
 
 </div>
 
@@ -132,19 +163,19 @@ Watch the DOM tree construct, styles cascade, and pixels paint to complete the j
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/network-journey.git
+git clone https://github.com/yourusername/jsengine-eventloop.git
 
 # Navigate to project
-cd network-journey
+cd jsengine-eventloop
 
 # Install dependencies
 npm install
 
-# Launch the experience
+# Launch the visualizer
 npm run dev
 ```
 
-Open [localhost:5173](http://localhost:5173) and prepare for liftoff. 🚀
+Open [localhost:5173](http://localhost:5173) and start exploring! 🚀
 
 <br />
 
@@ -159,17 +190,29 @@ Open [localhost:5173](http://localhost:5173) and prepare for liftoff. 🚀
 
 <br />
 
+## 🎓 How It Works
+
+The engine simulates JavaScript's execution model:
+
+1. **Creation Phase**: Variables and functions are hoisted and stored in memory
+2. **Execution Phase**: Code runs line-by-line, pushing/popping the call stack
+3. **Event Loop**: After the call stack empties, microtasks run, then one macrotask, repeat
+
+Each scenario is a sequence of instructions (`DECLARE_VAR`, `INITIALIZE`, `CALL_FUNCTION`, `LOG`, etc.) that the engine processes while updating the UI in real-time.
+
+<br />
+
 ## 🤝 Contributing
 
-Found a bug in the matrix? Have an idea to make the journey even more epic?
+Found a bug? Have an idea for a new scenario? Want to add support for generators or async iterators?
 
-Pull requests are welcome. For major changes, please open an issue first.
+Pull requests are welcome! For major changes, please open an issue first.
 
 <br />
 
 ## 📄 License
 
-**MIT** — Use it, learn from it, build upon it.
+**MIT** — Use it, learn from it, build upon it, teach with it.
 
 <br />
 
@@ -177,9 +220,9 @@ Pull requests are welcome. For major changes, please open an issue first.
 
 <div align="center">
 
-**Made with 💙 and way too much caffeine**
+**Made with 💙 for developers learning JavaScript internals**
 
-_If you learned something, drop a ⭐_
+_If this helped you finally understand the event loop, drop a ⭐_
 
 </div>
 
@@ -221,15 +264,15 @@ export default defineConfig([
       // other options...
     },
   },
-])
+]);
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
 export default defineConfig([
   globalIgnores(['dist']),
@@ -250,5 +293,5 @@ export default defineConfig([
       // other options...
     },
   },
-])
+]);
 ```
