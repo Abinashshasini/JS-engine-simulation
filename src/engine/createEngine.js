@@ -10,16 +10,11 @@ export function createEngine(scenario) {
     logs: [],
     microtaskQueue: [],
     macrotaskQueue: [],
-    rafQueue: [], // requestAnimationFrame
-    mutationObserverQueue: [], // MutationObserver (microtask priority)
-    uiEventQueue: [], // UI events (clicks, input, etc.)
-    networkQueue: [], // Fetch/XHR responses
     webAPIs: {},
     phase: 'idle',
     currentLine: -1,
     stepCount: 0,
     currentExplanation: null,
-    isRendering: false, // Indicates rendering phase is active
   });
 
   let state = initialState();
@@ -148,6 +143,7 @@ export function createEngine(scenario) {
 
         case 'PHASE_EVENT_LOOP':
           state.phase = 'event-loop';
+          state.currentLine = -1; // Clear stale highlight from sync phase
           state.logs.push('🔄 EVENT LOOP - Processing Queues');
           break;
 
@@ -310,6 +306,7 @@ export function createEngine(scenario) {
         }
 
         case 'EVENT_LOOP_TICK': {
+          state.currentLine = -1; // Reset highlight during tick processing
           state.logs.push('━━━ Event Loop Tick ━━━');
 
           // Flush all microtasks first
@@ -317,9 +314,9 @@ export function createEngine(scenario) {
             const task = state.microtaskQueue.shift();
 
             if (typeof task === 'string') {
-              state.logs.push(`   🔹 Microtask: console.log("${task}")`);
+              state.logs.push(`   🔹 Microtask executed: ${task}`);
             } else if (task && task.log) {
-              state.logs.push(`   🔹 Microtask: console.log("${task.log}")`);
+              state.logs.push(`   🔹 Microtask executed: ${task.log}`);
               if (task.scheduleMicrotask) {
                 state.microtaskQueue.push(task.scheduleMicrotask);
                 state.logs.push(
@@ -339,9 +336,9 @@ export function createEngine(scenario) {
             const cb = macrotask.callback;
 
             if (typeof cb === 'string') {
-              state.logs.push(`   ⬛ Macrotask: console.log("${cb}")`);
+              state.logs.push(`   ⬛ Macrotask executed: ${cb}`);
             } else if (typeof cb === 'object' && cb.log) {
-              state.logs.push(`   ⬛ Macrotask: console.log("${cb.log}")`);
+              state.logs.push(`   ⬛ Macrotask executed: ${cb.log}`);
             } else {
               state.logs.push(`   ⬛ Macrotask executed`);
             }

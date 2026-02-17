@@ -52,7 +52,7 @@ console.log("end");`;
         <span className="text-[11px] text-vscode-text-muted ml-2">demo.js</span>
       </div>
       {/* Code */}
-      <div className="p-4 font-mono text-[13px] leading-6 min-h-[280px]">
+      <div className="p-4 font-mono text-[13px] leading-6 min-h-70">
         {lines.map((line, i) => (
           <div
             key={i}
@@ -66,7 +66,7 @@ console.log("end");`;
               <motion.span
                 animate={{ opacity: [1, 0] }}
                 transition={{ repeat: Infinity, duration: 0.6 }}
-                className="inline-block w-[2px] h-4 bg-accent-blue ml-0.5 mt-1"
+                className="inline-block w-0.5 h-4 bg-accent-blue ml-0.5 mt-1"
               />
             )}
           </div>
@@ -103,45 +103,6 @@ function ConsolePreview() {
           </motion.div>
         ))}
       </div>
-    </div>
-  );
-}
-
-// Floating background particles
-function Particles() {
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 3 + 1,
-    duration: Math.random() * 15 + 10,
-    delay: Math.random() * 5,
-  }));
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          className="absolute rounded-full bg-accent-blue/10"
-          style={{
-            width: p.size,
-            height: p.size,
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-          }}
-          animate={{
-            y: [0, -60, 0],
-            opacity: [0.2, 0.6, 0.2],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            delay: p.delay,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
     </div>
   );
 }
@@ -214,14 +175,23 @@ const fadeUp = {
 };
 
 export function LandingPage({ onStart }) {
+  /** Function to show js engine on click enter */
+  const handleEnterClick = (e) => {
+    if (e.key === 'Enter') {
+      onStart();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleEnterClick);
+    return () => window.removeEventListener('keydown', handleEnterClick);
+  }, []);
+
   return (
     <div
       className="h-screen w-screen bg-vscode-darker text-vscode-text overflow-auto relative"
-      onKeyDown={(e) => e.key === 'Enter' && onStart()}
       tabIndex={0}
     >
-      <Particles />
-
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-10 md:py-16">
         {/* Hero Section */}
         <div className="flex flex-col lg:flex-row items-center gap-12 mb-20">

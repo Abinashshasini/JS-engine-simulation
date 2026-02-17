@@ -17,7 +17,6 @@ function greet() {
 console.log(a);
 greet();`,
     instructions: [
-      // Phase 1: Creation
       { type: 'PHASE_CREATION' },
       { type: 'PUSH_CONTEXT', payload: { type: 'global', name: 'Global' } },
       { type: 'DECLARE_VAR', payload: { name: 'a' }, line: 0 },
@@ -34,8 +33,6 @@ greet();`,
         },
         line: 4,
       },
-
-      // Phase 2: Execution
       { type: 'PHASE_EXECUTION' },
       { type: 'INITIALIZE', payload: { name: 'a', value: 10 }, line: 0 },
       { type: 'INITIALIZE', payload: { name: 'b', value: 20 }, line: 1 },
@@ -141,6 +138,12 @@ console.log("C");`,
 
       { type: 'PHASE_EVENT_LOOP' },
       { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: 'setTimeout callback' },
+      },
+      { type: 'LOG', payload: { value: 'B' }, line: 3 },
+      { type: 'RETURN' },
     ],
   },
 
@@ -176,6 +179,18 @@ console.log("sync");`,
 
       { type: 'PHASE_EVENT_LOOP' },
       { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: '.then() callback' },
+      },
+      { type: 'LOG', payload: { value: 'promise' }, line: 5 },
+      { type: 'RETURN' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: 'setTimeout callback' },
+      },
+      { type: 'LOG', payload: { value: 'timeout' }, line: 1 },
+      { type: 'RETURN' },
     ],
   },
 
@@ -221,6 +236,12 @@ console.log("outside");`,
 
       { type: 'PHASE_EVENT_LOOP' },
       { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: 'async resume: test()' },
+      },
+      { type: 'LOG', payload: { value: 'after await' }, line: 3 },
+      { type: 'RETURN' },
     ],
   },
 
@@ -260,6 +281,18 @@ console.log("outside");`,
 
       { type: 'PHASE_EVENT_LOOP' },
       { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: '.then() callback' },
+      },
+      { type: 'LOG', payload: { value: 'first' }, line: 1 },
+      { type: 'RETURN' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: '.then() callback' },
+      },
+      { type: 'LOG', payload: { value: 'second' }, line: 4 },
+      { type: 'RETURN' },
     ],
   },
 
@@ -434,7 +467,25 @@ console.log("end");`,
 
       { type: 'PHASE_EVENT_LOOP' },
       { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: '.then() callback' },
+      },
+      { type: 'LOG', payload: { value: 'promise' }, line: 5 },
+      { type: 'RETURN' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: 'setTimeout callback' },
+      },
+      { type: 'LOG', payload: { value: 'timer1' }, line: 2 },
+      { type: 'RETURN' },
       { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: 'setTimeout callback' },
+      },
+      { type: 'LOG', payload: { value: 'timer2' }, line: 3 },
+      { type: 'RETURN' },
     ],
   },
 
@@ -488,6 +539,12 @@ console.log("after Promise.all");`,
 
       { type: 'PHASE_EVENT_LOOP' },
       { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: '.then() callback' },
+      },
+      { type: 'LOG', payload: { value: '[1, 2, 3]' }, line: 6 },
+      { type: 'RETURN' },
     ],
   },
 
@@ -591,7 +648,8 @@ obj.greetArrow();`,
   {
     id: 'event-loop-challenge',
     name: '14. Event Loop Challenge',
-    description: 'Complex ordering: sync, microtask, macrotask.',
+    description:
+      'Order: sync first, then all microtasks, then macrotasks one by one.',
     code: `console.log("1");
 
 setTimeout(() => {
@@ -610,35 +668,64 @@ console.log("6");`,
       { type: 'PUSH_CONTEXT', payload: { type: 'global', name: 'Global' } },
 
       { type: 'PHASE_EXECUTION' },
+      // Sync code runs first
       { type: 'LOG', payload: { value: '1' }, line: 0 },
       {
         type: 'REGISTER_TIMEOUT',
-        payload: { callback: '2 + microtask(3)', delay: 0 },
+        payload: { callback: 'setTimeout-1', delay: 0 },
         line: 2,
       },
       {
         type: 'SCHEDULE_MICROTASK',
-        payload: { callback: '4 + macrotask(5)' },
+        payload: { callback: 'promise-1' },
         line: 7,
       },
       { type: 'LOG', payload: { value: '6' }, line: 12 },
       { type: 'POP_CONTEXT' },
 
       { type: 'PHASE_EVENT_LOOP' },
-      // First: flush microtasks (logs "4", schedules timeout for "5")
+      // Microtask: promise-1 callback runs first
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: '.then() callback' },
+      },
       { type: 'LOG', payload: { value: '4' }, line: 8 },
       {
         type: 'REGISTER_TIMEOUT',
-        payload: { callback: '5', delay: 0 },
+        payload: { callback: 'setTimeout-2', delay: 0 },
         line: 9,
       },
-      // Then: macrotask "2", which schedules microtask "3"
+      { type: 'RETURN' },
+
+      // First macrotask: first setTimeout callback
       { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: 'setTimeout callback' },
+      },
       { type: 'LOG', payload: { value: '2' }, line: 3 },
-      { type: 'SCHEDULE_MICROTASK', payload: { callback: '3' }, line: 4 },
+      {
+        type: 'SCHEDULE_MICROTASK',
+        payload: { callback: 'promise-2' },
+        line: 4,
+      },
+      { type: 'RETURN' },
+      // Microtask scheduled by macrotask runs immediately
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: '.then() callback' },
+      },
+      { type: 'LOG', payload: { value: '3' }, line: 4 },
+      { type: 'RETURN' },
+
+      // Second macrotask: second setTimeout callback
       { type: 'EVENT_LOOP_TICK' },
-      // Final macrotask "5"
-      { type: 'EVENT_LOOP_TICK' },
+      {
+        type: 'PUSH_CONTEXT',
+        payload: { type: 'function', name: 'setTimeout callback' },
+      },
+      { type: 'LOG', payload: { value: '5' }, line: 9 },
+      { type: 'RETURN' },
     ],
   },
 

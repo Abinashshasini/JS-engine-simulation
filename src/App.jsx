@@ -135,36 +135,86 @@ function App() {
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-vscode-darker">
       {/* Top Bar */}
       <div className="shrink-0">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-vscode-panel border-b border-vscode-border">
+        <div className="grid grid-cols-3 px-3 py-2 bg-vscode-panel border-b border-vscode-border">
           {/* Left - Title & Scenario */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-start gap-3">
             <span className="text-sm text-vscode-text font-normal hidden md:inline">
               <span className="text-accent-yellow">⚡</span> JS Engine
             </span>
-            <select
-              value={scenario.id}
-              onChange={(e) =>
-                selectScenario(scenarios.find((s) => s.id === e.target.value))
-              }
-              className="px-2 py-1.5 pr-8 text-xs bg-vscode-input border border-vscode-border rounded text-vscode-text cursor-pointer w-40 md:w-52 focus:outline-none focus:border-accent-blue appearance-none"
-            >
-              {scenarios.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {completedScenarios.includes(s.id) ? '✓ ' : ''}
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            <span
-              className="text-[10px] text-vscode-comment hidden lg:inline"
-              title="Progress"
-            >
-              {completedScenarios.length}/{scenarios.length} done
-            </span>
+            <div className="relative group">
+              <select
+                value={scenario.id}
+                onChange={(e) =>
+                  selectScenario(scenarios.find((s) => s.id === e.target.value))
+                }
+                className="px-3 py-2 pr-9 text-xs bg-vscode-input border border-vscode-border rounded-md text-vscode-text cursor-pointer w-44 md:w-60 focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue/50 hover:border-accent-blue/50 appearance-none transition-all duration-200 font-medium"
+              >
+                {scenarios.map((s) => {
+                  const isCurrent = s.id === scenario.id;
+                  return (
+                    <option key={s.id} value={s.id}>
+                      {isCurrent ? '▶ ' : '  '}
+                      {s.name}
+                    </option>
+                  );
+                })}
+              </select>
+              {/* Custom dropdown arrow */}
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-vscode-text-muted group-hover:text-accent-blue transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+              {/* Completion badge */}
+              {completedScenarios.includes(scenario.id) && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-accent-blue rounded-full flex items-center justify-center shadow-lg shadow-accent-blue/50"
+                  title="Completed"
+                >
+                  <span className="text-[7px] text-white font-bold">✓</span>
+                </motion.div>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span
+                className="text-[10px] text-vscode-comment hidden lg:inline tabular-nums"
+                title="Completed Scenarios"
+              >
+                {completedScenarios.length}/{scenarios.length}
+              </span>
+              <div className="hidden lg:flex items-center gap-0.5">
+                {Array.from({ length: Math.min(5, scenarios.length) }).map(
+                  (_, i) => {
+                    const progress =
+                      (completedScenarios.length / scenarios.length) * 5;
+                    return (
+                      <div
+                        key={i}
+                        className={`w-1 h-2 rounded-full transition-all duration-300 ${
+                          i < progress ? 'bg-accent-blue' : 'bg-vscode-border'
+                        }`}
+                      />
+                    );
+                  },
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Center - Controls */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center justify-center gap-1.5">
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -212,7 +262,7 @@ function App() {
           </div>
 
           {/* Right - Phase, Step & Theme */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <AnimatePresence mode="wait">
               <motion.span
                 key={engineState.phase}
